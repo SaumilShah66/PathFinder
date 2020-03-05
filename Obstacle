@@ -1,0 +1,22 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import math
+
+
+class Obstructions():
+    def __init__(self, width, height, r, c):
+        self.W = width +1
+        self.H = height +1
+        self.r = r
+        self.c = c
+        self.showObstacle = False
+        self.map = np.zeros([self.H, self.W], dtype=np.int8)
+        self.animationImage = np.zeros([self.H, self.W, 3])
+        self.generateMap()
+        #self.showMap()
+        self.r = 0
+        self.c = 0
+        self.showObstacle = True
+        self.generateMap()
+        self.explored = self.map.copy()
+        pass
