@@ -110,10 +110,10 @@ class PathFinder():
 
 
 Parser = argparse.ArgumentParser()
-Parser.add_argument('--Start', default="[5,5]", help='Give initial point')
-Parser.add_argument('--End', default="[290,190]", help='Give initial point')
-Parser.add_argument('--RobotRadius', default=0, help='Give initial point')
-Parser.add_argument('--Clearance', default=0, help='Give initial point')
+Parser.add_argument('--Start', default="[5,5]", help='Give inital point')
+Parser.add_argument('--End', default="[290,190]", help='Give inital point')
+Parser.add_argument('--RobotRadius', default=2, help='Give inital point')
+Parser.add_argument('--Clearance', default=2, help='Give inital point')
 Parser.add_argument('--ShowAnimation', default=1, help='1 if want to show animation else 0')
 Parser.add_argument('--Framerate', default=30, help='Will show next step after this many steps. Made for fast viewing')
 Args = Parser.parse_args()
