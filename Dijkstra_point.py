@@ -8,7 +8,36 @@ import argparse
 from heapq import heappush, heappop
 
 
+class PathFinder():
+	def __init__(self, start, end, robotRadius, clearance):
+		self.start = (start[1], start[0])
+		self.end = (end[1], end[0])
+		self.allNodes = []
+		############### nodeID [0], pareent [1], node [2], cost [3]  ## For BFS
+		# self.mainData = [[0, 0, self.start, 0]]
+		############### cost , node  #### For Dijkstar
+		self.Data = []
+		self.allPose = [self.start]
+		self.actionSet()
+		self.possibleMove = len(self.actionset)
+		self.temp = []
+		self.obss = Obstructions(300,200, robotRadius, clearance)
+		self.goalReach = False
+		self.view = True
+		self.finalGoalState = []
+		self.trace = []
+		self.showCounter = 0
+		self.skipFrame = 1
 
+	def initialCheck(self):
+		if not self.obss.checkFeasibility(self.start):
+			print("Start node is in obstacle field. Please provide correct starting position.")
+			return False
+		elif not self.obss.checkFeasibility(self.end):
+			print("Goal node is in obstacle field. Please provide correct goal position.")
+			return False
+		else:
+			return True
 
 
 
