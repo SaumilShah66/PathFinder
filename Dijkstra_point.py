@@ -7,7 +7,6 @@ import time
 import argparse
 from heapq import heappush, heappop
 
-
 class PathFinder():
 	def __init__(self, start, end, robotRadius, clearance):
 		self.start = (start[1], start[0])
@@ -39,8 +38,75 @@ class PathFinder():
 		else:
 			return True
 
+	def actionSet(self):
+		################# [ h,  w, cost]
+		self.actionset = [[ 1,  0, 1],
+						  [ 0,  1, 1],
+						  [-1,  0, 1],
+						  [ 0, -1, 1],
+						  [ 1,  1, np.sqrt(2)],
+						  [ 1, -1, np.sqrt(2)],
+						  [-1,  1, np.sqrt(2)],
+						  [-1, -1, np.sqrt(2)]]
+		pass
 
+	def checkEnd(self, currentNode):
+		return self.end == currentNode
 
+	def findNewPose(self, nodeState, action):
+		tmp = nodeState[2]
+		tmp = (tmp[0]+action[0], tmp[1]+action[1])
+		return tmp
+
+	def dijNewPose(self, node, action):
+		tmp = (node[0]+action[0], node[1]+action[1])
+		return tmp
+
+	def viewer(self, num):
+		self.showCounter += 1
+		if self.showCounter%num == 0:
+			cv2.imshow("Solver", self.obss.animationImage)
+			if cv2.waitKey(1) & 0xFF == ord('q'):
+				self.view = False
+		pass
+
+	def trackBack(self):
+		path = [self.end]
+		tmp = self.end
+		while tmp!=self.start:
+			self.obss.path(tmp)
+			temp = self.obss.getParent(tmp)
+			tmp = (int(temp[0]), int(temp[1]))
+			# print(tmp)
+			path.append(tmp)
+			self.viewer(1)
+		return
+
+	def DijkstarSolve(self):
+		heappush(self.Data, (0, self.start))
+		while len(self.Data) > 0:
+			cost, node = heappop(self.Data)
+			if self.checkEnd(node):
+				self.goalReach = True
+				print("goal reached")
+				self.trackBack()
+				return
+			for action in self.actionset:
+				newPose = self.dijNewPose(node, action)
+				if self.obss.checkFeasibility(newPose):
+					newCost = cost + action[2]
+					if self.obss.checkVisited(newPose):
+						self.obss.addExplored(newPose)
+						self.obss.addParent(newPose, node, newCost)
+						heappush(self.Data, (newCost, newPose))
+					else:
+						if self.obss.getCost(newPose) > newCost:
+							# self.obss.addExplored(newPose)
+							self.obss.addParent(newPose, node, newCost)
+					if self.view:
+						self.viewer(30)
+		print("Could not find goal node...Leaving..!!")
+		return 
 
 
 Parser = argparse.ArgumentParser()
@@ -61,3 +127,18 @@ start = [int(i) for i in start[1:-1].split(',')]
 start[1] = 200 - start[1]
 end = [int(i) for i in end[1:-1].split(',')] 
 end[1] = 200 - end[1]
+
+solver = PathFinder(start, end, r, c)
+solver.view = int(Args.ShowAnimation)
+solver.skipFrame = int(Args.Framerate)
+
+if solver.initialCheck():
+	startTime = time.time()
+	solver.DijkstarSolve()
+	print(time.time() - startTime)
+	print("Press (q) to exit")
+	solver.viewer(1)
+	cv2.waitKey(0)
+	cv2.destroyAllWindows()
+else:
+	pass
